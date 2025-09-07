@@ -1,36 +1,36 @@
-# 极光Cursor激活工具破解尝试
+# JG-Cursor Activation Tool Cracking Attempt
 
-**简体中文** | [English](README_en.md)
+[简体中文](README.md) | **English**
 
-> 📖 **工具使用说明**: [点击查看工具的详细使用说明和功能介绍](README_backup.md)
+> 📖 **Tool Usage Instructions**: [Click to view detailed usage instructions and feature introduction](README_backup.md)
 
-> ⚠️ **免责声明**: 本项目仅供学习研究使用，请勿用于商业用途。使用本工具所产生的任何后果由用户自行承担。
+> ⚠️ **Disclaimer**: This project is for educational and research purposes only. Do not use it for commercial purposes. Users are responsible for any consequences arising from the use of this tool.
 
-## 一、缘起
+## I. Origin
 
-Cursor的续杯需要很多邮箱不断地注册，自己维护邮箱又有点麻烦，朋友从淘宝上买了个无线续杯的工具，好处是商家做了个客户端，把切换邮箱账号的逻辑都封装在里面了不用自己操心了，商家的售后也很好，综合来看还是很划算的，他把买的激活码分享给了我，我也先试用一下，然后试用的时候就发现一个小小的问题，就是这个工具是用激活码的方式激活的，但是激活码是跟机器绑定的：
+Cursor's renewal requires many email addresses for continuous registration, and maintaining email addresses myself is a bit troublesome. A friend bought an unlimited renewal tool from Taobao. The advantage is that the merchant created a client that encapsulates all the logic for switching email accounts, so you don't have to worry about it yourself. The merchant's after-sales service is also very good. Overall, it's quite cost-effective. He shared the activation code he bought with me, and I tried it first. During the trial, I discovered a small problem: this tool uses activation codes for activation, but the activation codes are bound to the machine:
 
 ![image-20250419032830941](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419032830941.png)
 
-像上面一样，激活码是跟机器码绑定的，如果激活码跟已经绑定的机器码对不上的话，则无法使用，刷新请求的时候就会报错提示机器码不对之类的，然后我就抓耳挠腮，寻思着既然这是一个客户端，那我应该是可以手动修改它计算出来的机器码，只要我把机器码修改为跟我朋友的机器码是一致的，那么我应该也能使用他的激活码了。
+As shown above, the activation code is bound to the machine code. If the activation code doesn't match the already bound machine code, it cannot be used. When refreshing requests, it will report an error indicating that the machine code is incorrect. Then I scratched my head and thought that since this is a client, I should be able to manually modify the machine code it calculates. As long as I modify the machine code to be consistent with my friend's machine code, I should also be able to use his activation code.
 
-## 二、解包逆向
+## II. Unpacking and Reverse Engineering
 
-这个客户端看起来就是一股浓浓的Electron风格，我是Mac系统，所以接下来就是介绍Mac下如何逆向Electron程序。
+This client looks like it has a strong Electron style. I'm on a Mac system, so next I'll introduce how to reverse engineer Electron programs on Mac.
 
-客户端从这里下载：https://bwcxynefwek.feishu.cn/docx/XgtZdePyEoarjXxp9eLciNZFnkd
+Client download link: https://bwcxynefwek.feishu.cn/docx/XgtZdePyEoarjXxp9eLciNZFnkd
 
-项目根目录下的data文件夹下，有逆向出来的全部的客户端的代码，也可以去查阅那里了解。
+In the data folder under the project root directory, there is all the client code that has been reverse engineered, which you can also refer to for understanding.
 
-在Mac下，在可执行文件的图标上右键，选择“显示包内容”：
+On Mac, right-click on the executable file icon and select "Show Package Contents":
 
 ![image-20250419033559093](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419033559093.png)
 
-会打开这个Electron文件的包的目录：
+This will open the package directory of this Electron file:
 
 ![image-20250419033810077](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419033810077.png)
 
-然后打开一个Terminal，把上面这个Contents文件夹拖动到Terminal，就能看到这个文件夹的绝对路径，然后进入这个目录：
+Then open a Terminal, drag the Contents folder above to Terminal to see the absolute path of this folder, then enter this directory:
 
 ```bash
 (base) ➜  Contents cd /Users/cc11001100/Downloads/JG-Cursor-1.4.0-mac.app/Contents 
@@ -39,7 +39,7 @@ Cursor的续杯需要很多邮箱不断地注册，自己维护邮箱又有点�
 (base) ➜  Contents 
 ```
 
-看下这个目录下都有哪些文件：
+Let's see what files are in this directory:
 
 ```bash
 (base) ➜  Contents ls -l 
@@ -51,7 +51,7 @@ drwxr-xr-x@  3 cc11001100  staff    96  3 10 22:41 MacOS
 drwxr-xr-x@ 86 cc11001100  staff  2752  4 19 01:09 Resources
 ```
 
-这个`Resources`就是存放Electron的应用自己的代码逻辑的地方，其它的几个都是框架本身的代码，在这个例子中用不到我们先忽略，进入`Resources`，看下都有哪些文件：
+The `Resources` directory is where Electron application's own code logic is stored. The other directories are framework code itself, which we can ignore for now in this example. Enter `Resources` and see what files are there:
 
 ```bash
 (base) ➜  Contents cd Resources
@@ -117,32 +117,32 @@ drwxr-xr-x@ 2 cc11001100  staff       64  3 10 22:41 zh_CN.lproj
 drwxr-xr-x@ 2 cc11001100  staff       64  3 10 22:41 zh_TW.lproj
 ```
 
-下面有很多文件，我们需要关注的就是`app.asar`，这个文件可以理解为是一个压缩包，它里面就是Electron应用自己的逻辑的打包，只不过它压缩的时候是使用了自定义的压缩格式，所以需要先安装它的打包工具来解压：
+Among the many files below, we need to focus on `app.asar`. This file can be understood as a compressed package that contains the packaged logic of the Electron application itself. However, it uses a custom compression format when compressing, so we need to install its packaging tool to decompress it:
 
 ```bash
 npm install -g asar
 ```
 
-如果已经安装了`cnpm`的话可以使用`cnpm`来安装：
+If you have already installed `cnpm`, you can use `cnpm` to install:
 
 ```bash
 npm install -g asar
 ```
 
-安装完之后验证一下是否安装成功：
+After installation, verify if the installation was successful:
 
 ```bash
 (base) ➜  Resources asar --version
 v3.3.1
 ```
 
-关于asar的打包格式不在此处赘述，可以类比理解为zip类似的格式，这里只需要理解asar命令可以解包、重打包就可以了，我们使用asar来对app.asar文件进行解包：
+I won't elaborate on the asar packaging format here. You can understand it as similar to zip format. Here you just need to understand that the asar command can unpack and repack. We use asar to unpack the app.asar file:
 
 ```bash
 asar extract app.asar app-extract
 ```
 
-现在进入app-extract目录，查看解包出来的文件都有哪些：
+Now enter the app-extract directory and see what files have been unpacked:
 
 ```bash
 (base) ➜  app-extract ls -l 
@@ -152,7 +152,7 @@ drwxr-xr-x  26 cc11001100  staff  832  4 19 03:49 node_modules
 -rw-r--r--   1 cc11001100  staff  388  4 19 03:49 package.json
 ```
 
-上面这个文件的布局看起来就很熟悉了，这看上去就是一个前端项目的布局，`package.json`是项目的一些原信息和依赖声明之类的，我们看一下内容：
+The file layout above looks very familiar. This looks like a frontend project layout. `package.json` contains project metadata and dependency declarations. Let's look at the content:
 
 ```json
 {
@@ -173,11 +173,11 @@ drwxr-xr-x  26 cc11001100  staff  832  4 19 03:49 node_modules
 }
 ```
 
-`node_modules`文件夹下就是具体的依赖，因为这是一个黑洞，所以我们不再展示其内容。
+The `node_modules` folder contains specific dependencies. Since this is a black hole, we won't show its contents.
 
 ![image-20250419035316110](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419035316110.png)
 
-而dist目录看上去就让人有一种亲切的感觉，因为这个目录下就是Electron的应用代码打包后的样子，让我们进入查看一下：
+The dist directory looks familiar because this directory contains the packaged Electron application code. Let's enter and take a look:
 
 ```bash
 (base) ➜  app-extract cd dist 
@@ -188,13 +188,13 @@ drwxr-xr-x  3 cc11001100  staff   96  4 19 03:49 preload
 drwxr-xr-x  4 cc11001100  staff  128  4 19 03:49 renderer
 ```
 
-进入到dist目录下，这就是一个典型的Electron应用的文件布局了：
+Entering the dist directory, this is a typical Electron application file layout:
 
-- renderer目录下是前端界面的一些文件
-- preload是桥接前后端的
-- main是后端逻辑
+- The renderer directory contains frontend interface files
+- preload bridges frontend and backend
+- main contains backend logic
 
-我们要修改的是机器码，机器码肯定是后端采集生成，传递给前端展示的，所以我们重点关注main文件下的逻辑，进入这个文件夹：
+What we want to modify is the machine code, which is definitely collected and generated by the backend and passed to the frontend for display. So we focus on the logic in the main file. Enter this folder:
 
 ```bash
 (base) ➜  dist cd main 
@@ -203,14 +203,14 @@ total 32
 -rw-r--r--  1 cc11001100  staff  15345  4 19 03:49 main.js
 ```
 
-很简单就一个单独的js，注意这个js的大小：
+Very simple, just a single js file. Note the size of this js file:
 
 ```bash
 (base) ➜  main ls -lh main.js 
 -rw-r--r--  1 cc11001100  staff    15K  4 19 03:49 main.js
 ```
 
-这一个文件就有15KB大，里面有一堆逻辑，现在科技水平好了，不用再茹毛饮血了，我直接借助Cursor对这个大文件里的逻辑格式化并且加注释，找到了跟生成设备码相关的函数：
+This single file is 15KB in size and contains a lot of logic. Now that technology has advanced, we don't need to live primitively anymore. I directly used Cursor to format and add comments to the logic in this large file, and found the function related to generating device codes:
 
 ```js
 function P() {
@@ -220,14 +220,14 @@ function P() {
             switch (c.label) {
                 case 0:
                     var u;
-                    // 检查是否已存在设备ID，如果存在则直接返回
+                    // Check if deviceId already exists, return directly if it does
                     if (e = M.get("deviceId")) return [2, e];
-                    // 定义获取MAC地址的函数
+                    // Define function to get MAC address
                     u = r(function () {
                         return t(this, function (e) {
                             return [2, new Promise(function (e, r) {
                                 var n = "";
-                                // 根据不同平台选择不同的命令获取MAC地址
+                                // Choose different commands based on different platforms to get MAC address
                                 switch (process.platform) {
                                     case"win32":
                                         n = "getmac";
@@ -242,14 +242,14 @@ function P() {
                                         r(Error("Unsupported platform"));
                                         return
                                 }
-                                // 执行命令获取MAC地址
+                                // Execute command to get MAC address
                                 (0, v.exec)(n, function (n, t) {
                                     if (n) {
                                         r(n);
                                         return
                                     }
                                     var s, o = "";
-                                    // 根据不同平台解析命令输出获取MAC地址
+                                    // Parse command output to get MAC address based on different platforms
                                     if ("win32" === process.platform) o = (null === (s = t.split("\n")[3]) || void 0 === s ? void 0 : s.split(" ")[0]) || ""; else if ("darwin" === process.platform) {
                                         var a = t.match(/ether\s+([0-9a-fA-F:]+)/);
                                         o = (null == a ? void 0 : a[1]) || ""
@@ -257,7 +257,7 @@ function P() {
                                         var i = t.match(/link\/ether\s+([0-9a-fA-F:]+)/);
                                         o = (null == i ? void 0 : i[1]) || ""
                                     }
-                                    // 如果没有找到MAC地址则返回错误
+                                    // Return error if no MAC address found
                                     if (!o) {
                                         r(Error("No MAC address found"));
                                         return
@@ -272,10 +272,10 @@ function P() {
                 case 1:
                     return c.trys.push([1, 3, , 4]), [4, n()];
                 case 2:
-                    // 获取MAC地址并使用SHA256哈希生成设备ID
+                    // Get MAC address and generate device ID using SHA256 hash
                     return s = c.sent(), o = "".concat(s).concat("your-secret-salt"), a = b.default.createHash("sha256").update(o).digest().toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "").slice(0, 16), M.set("deviceId", a), [2, a];
                 case 3:
-                    // 如果获取MAC地址失败，则使用UUID生成设备ID
+                    // If getting MAC address fails, generate device ID using UUID
                     return c.sent(), i = (0, E.v4)().slice(0, 16), M.set("deviceId", i), [2, i];
                 case 4:
                     return [2]
@@ -285,70 +285,70 @@ function P() {
 }
 ```
 
-被AI惯坏了，已经没有耐心读代码了，直接让Deepseek总结了一下：
+Spoiled by AI, I no longer have the patience to read code. I directly asked Deepseek to summarize:
 
-### **设备码生成规则**
+### **Device Code Generation Rules**
 
-1. **优先读取缓存**：如果已存在 `deviceId`，直接返回。
-2. **生成方式**：
-   - **主方案（MAC地址）**：
-     - 通过系统命令获取MAC地址（Windows: `getmac`，macOS: `ifconfig`，Linux: `ip link`）。
-     - 拼接固定盐值（`"your-secret-salt"`），用SHA256哈希 + Base64编码 + 字符替换（`+→-` `/→_` 去掉`=`），截取前16位。
-   - **备用方案（UUID）**：若获取MAC失败，生成随机UUID并截取前16位。
-3. **存储结果**：生成的 `deviceId` 会缓存，避免重复生成。
+1. **Priority Cache Reading**: If `deviceId` already exists, return directly.
+2. **Generation Method**:
+   - **Primary Method (MAC Address)**:
+     - Get MAC address through system commands (Windows: `getmac`, macOS: `ifconfig`, Linux: `ip link`).
+     - Concatenate fixed salt value (`"your-secret-salt"`), use SHA256 hash + Base64 encoding + character replacement (`+→-` `/→_` remove `=`), take first 16 characters.
+   - **Backup Method (UUID)**: If getting MAC fails, generate random UUID and take first 16 characters.
+3. **Store Result**: Generated `deviceId` is cached to avoid repeated generation.
 
-**特点**：跨平台、硬件绑定优先、唯一性保障。
+**Features**: Cross-platform, hardware binding priority, uniqueness guarantee.
 
-噢，所以我们只需要把判断是否已存在deviceId的地方给修改掉，让它一直为true，然后返回我们给定的机器码就可以了，为了尽量不影响到其它的代码逻辑，所以我们也不格式化，就使用deviceId作为关键字，把它附近的代码逻辑都给修改替换，这需要提前根据格式化好的代码提前规划好。否则就很容易出错：
+Oh, so we just need to modify the part that checks if deviceId already exists, make it always return true, and then return our given machine code. To minimize impact on other code logic, we won't format it. We'll use deviceId as a keyword and modify and replace all the code logic around it. This needs to be planned in advance based on the formatted code, otherwise it's easy to make mistakes:
 
 ![image-20250419041646717](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419041646717.png)
 
-替换完之后，我们需要把修改后的代码重新打包，替换掉原来的app.asar文件才能生效，我们先把原来的app.asar文件备份，以防出现问题的时候无法恢复：
+After replacement, we need to repackage the modified code and replace the original app.asar file for it to take effect. Let's first backup the original app.asar file in case we need to recover if problems occur:
 
 ```bash
 cp app.asar app.asar.bak
 ```
 
-然后把app.asar文件删除：
+Then delete the app.asar file:
 
 ```bash
 rm app.asar
 ```
 
-然后使用我们刚才修改过的目录，重新打包出来一个app.asar文件：
+Then use the directory we just modified to repackage a new app.asar file:
 
 ```bash
 asar pack app-extract app.asar
 ```
 
-然后重新启动这个Cursor续杯的客户端，发现机器码已经被识别为了我们刚才设置的：
+Then restart this Cursor renewal client, and find that the machine code has been recognized as what we just set:
 
 ![image-20250419042202018](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419042202018.png)
 
-至此实现了购买一个激活码，能够在多台机器上使用，只需要解包把机器码修改为最初绑定的那个机器码就可以了，于是接下来的几周我就愉快的白嫖我朋友买的那个激活码，直到Cursor开始加强风控。
+At this point, we achieved using one activation code on multiple machines. We just need to unpack and modify the machine code to be consistent with the originally bound machine code. So for the next few weeks, I happily freeloaded off my friend's activation code until Cursor started strengthening risk control.
 
-## 三、柳暗花明又一村
+## III. Another Village After Dark Willows and Bright Flowers
 
-可能是薅羊毛薅得太厉害了，Cursor官网开始加强风控，突然有一天，无限续杯没续上，然后我加入了商家的客服群，在客服群很多人截图反馈问题，有些人反馈问题的时候截图里带上了自己的激活码和机器码：
+Probably because I was freeloading too hard, Cursor's official website started strengthening risk control. Suddenly one day, the unlimited renewal didn't work. Then I joined the merchant's customer service group. In the customer service group, many people posted screenshots to report problems. Some people included their activation codes and machine codes in screenshots when reporting problems:
 
 ![image-20250419042657749](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419042657749.png)
 
-emm。。。？
+emm...?
 
 ![image-20250419042735101](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419042735101.png)
 
-可能有这句话的原因吧，后续很多人反馈问题的时候就一点也不打码放心的往群里发了。
+Probably because of this sentence, many people later reported problems without any censoring and posted freely in the group.
 
-虽然我这个时候已经购买了新的激活码，这些激活码对我意义不大，但是作为有收集癖的宅男，看到有用的东西怎么能忍得住不去收集一下呢，然后我就像收菜一样，收了一堆机器码和激活码，不过验证之后有一些是废弃的：
+Although I had already purchased a new activation code at this time, these activation codes didn't mean much to me. But as a otaku with a collecting habit, how could I resist not collecting useful things? Then I collected a bunch of machine codes and activation codes like harvesting vegetables. However, after verification, some were abandoned:
 
-- 估计有些人是反馈完问题直接退费了，所以激活码就被废弃了
-- 有些激活码里有iL1之类的字符，OCR识别很难区分，我组合穷举了几次就放弃了，实在试不出来到底是1还是l
+- I estimate some people got refunds directly after reporting problems, so the activation codes were abandoned
+- Some activation codes contained characters like iL1, which are difficult to distinguish with OCR recognition. I tried exhaustive combinations several times and gave up, really couldn't figure out whether it was 1 or l
 
-我的朋友分享给了我一个激活码，投桃报李，我回馈回了一堆激活码，借花献佛哈哈哈：
+My friend shared an activation code with me. To reciprocate, I gave back a bunch of activation codes, borrowing flowers to offer to Buddha hahaha:
 
 ![image-20250419043101816](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419043101816.png)
 
-当然这些我们并没有真的使用，只是拿来收藏一下，期间因为我验证的时候频繁的涉及到Electron的解包和替换，所以为了解放双手自动化，我还专门写了个工具来辅助我替换机器码：
+Of course, we didn't actually use these, just collected them. During this period, because I frequently involved Electron unpacking and replacement when verifying, I wrote a tool specifically to help me replace machine codes automatically to free my hands:
 
 ```text
 https://github.com/cursor-home/JG-Cursor-cracker
@@ -356,42 +356,42 @@ https://github.com/cursor-home/JG-Cursor-cracker
 
 ![image-20250419043545766](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419043545766.png)
 
-修改Cursor激活器的机器码：
+Modifying the machine code of the Cursor activator:
 
 ![image-20250419043653276](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419043653276.png)
 
-通过这个工具作为辅助，验证登录了几个机器码+激活码的组合：
+With this tool as assistance, I verified and logged into several machine code + activation code combinations:
 
 ![image-20250419011143493](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419011143493.png)
 
-还有的是买的这种按额度付费的，看来这个商家的生意还挺大，啥样的SKU都有：
+There are also those that are purchased with quota-based payment. It seems this merchant's business is quite large, with all kinds of SKUs:
 
 ![image-20250419010243765](./docs/%E6%9E%81%E5%85%89Cursor%E6%BF%80%E6%B4%BB%E5%B7%A5%E5%85%B7%E7%A0%B4%E8%A7%A3%E5%B0%9D%E8%AF%95.assets/image-20250419010243765.png)
 
-## 四、happy end
+## IV. Happy End
 
-经过了一段时间的白嫖使用，我感觉Cursor很好用，来回切换账号也很麻烦，于是决定付费了。
+After a period of freeloading, I found Cursor very useful. Switching accounts back and forth was also troublesome, so I decided to pay for it.
 
-## 五、bad end
+## V. Bad End
 
-然后付费Cursor使用一段时间之后，发现这个产品有个很神奇的商业逻辑。
+Then after using paid Cursor for a while, I discovered this product has a very magical business logic.
 
-就是它的运行是需要依赖大模型算力的，而算力有限的情况下，它对用户的请求做了一些优先级去响应，不同的用户的请求具有不同的响应优先级。
+Its operation depends on large model computing power, and with limited computing power, it prioritizes user requests with different response priorities for different users.
 
-就是它的资源限制大概是：
+Its resource limitation is roughly:
 
 ```text
-付费用户fast request > 白嫖用户 >= 付费用户slow request > 付费用户slow request到达某个阈值
+Paid user fast request > Free user >= Paid user slow request > Paid user slow request reaching a certain threshold
 ```
 
-也就是说，如果你是付费用户，当你使用一段时间后，你的使用体验将非常糟糕，远远不如白嫖的方式资源分配优先级更高，第一次遇到把付费用户当日本人整的，我已经决定继续白嫖了。。。
+That is, if you are a paid user, after using it for a while, your user experience will be very poor, far worse than the resource allocation priority of freeloading. This is the first time I've encountered treating paid users like this. I've decided to continue freeloading...
 
-# 六、纸包不住火
+# VI. Truth Cannot Be Hidden
 
-发现群里客服再处理问题的时候,已经在明确说不要截图到设备号了,估计这个破解器的破解器,私下传播可能传到他们手里了....故此把这个项目直接public开源了，只是分享经历，供大家吃瓜。
+I found that when customer service in the group handles problems, they are already explicitly saying not to screenshot device numbers. I estimate this cracker's cracker may have been privately spread to their hands... So I directly made this project public and open source, just sharing experiences for everyone's entertainment.
 
 ![](./docs/极光Cursor激活工具破解尝试.assets/2ebc1382-f773-4e4b-b099-dd053ffd9a08.png)
 
 ---
 
-> 看完了，觉得有意思的话请随手给个 Star ⭐️ 吧，非常感谢！
+> If you found this interesting after reading, please give it a Star ⭐️, thank you very much!
